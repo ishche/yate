@@ -2,9 +2,9 @@ use std::cell::RefCell;
 use std::convert::TryInto;
 use std::io::*;
 use termion::input::MouseTerminal;
+use termion::raw::IntoRawMode;
 use termion::raw::RawTerminal;
 use termion::screen::AlternateScreen;
-use termion::raw::IntoRawMode;
 
 pub struct Screen {
     pub cursor_pos: (u16, u16),
@@ -35,6 +35,16 @@ impl Screen {
         let new_x: u16 = (x as i16 + dx).try_into().unwrap();
         let new_y: u16 = (y as i16 + dy).try_into().unwrap();
         self.cursor_pos = (new_x, new_y);
+    }
+
+    pub fn draw(&self, x: u16, y: u16, text: &str) {
+        write!(
+            self.out.borrow_mut(),
+            "{}{}",
+            termion::cursor::Goto(x + 1, y + 1),
+            text
+        )
+        .unwrap();
     }
 }
 

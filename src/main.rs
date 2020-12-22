@@ -26,8 +26,10 @@ fn main() {
         termion::cursor::Goto(x, y)
     )
     .unwrap();
+    for i in 1..20 {
+        screen.draw(0, i-1, &format!("{}", i));
+    }
     screen.out.borrow_mut().flush().unwrap();
-
     for c in stdin.keys() {
         match c.unwrap() {
             Key::Char('q') => break,

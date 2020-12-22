@@ -12,4 +12,8 @@ impl EditorView {
     pub fn new(screen: Screen) -> EditorView {
         EditorView {line_offset: 0, screen}
     }
+
+    pub fn paint_lines(&self) {
+        
+    }
 }
