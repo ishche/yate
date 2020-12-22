@@ -4,6 +4,7 @@ use termion::event::Key;
 use termion::input::TermRead;
 
 mod screen;
+mod ui;
 
 fn main() {
     let stdin = stdin();
