@@ -6,14 +6,17 @@ use termion::raw::IntoRawMode;
 use termion::raw::RawTerminal;
 use termion::screen::AlternateScreen;
 
+use crate::ui::Widget;
+
 pub struct Screen {
     pub cursor_pos: (u16, u16),
     size: (u16, u16),
     pub out: RefCell<RawTerminal<MouseTerminal<AlternateScreen<BufWriter<Stdout>>>>>,
+    widget: Box<dyn Widget>,
 }
 
 impl Screen {
-    pub fn new() -> Screen {
+    pub fn new(root_widget: Box<dyn Widget>) -> Screen {
         let (w, h) = termion::terminal_size().unwrap();
         let out = RefCell::new(
             MouseTerminal::from(AlternateScreen::from(BufWriter::with_capacity(
@@ -27,13 +30,21 @@ impl Screen {
             cursor_pos: (1, 1),
             size: (w.into(), h.into()),
             out,
+            widget: root_widget,
         }
     }
 
     pub fn cursor_shift(&mut self, dx: i16, dy: i16) {
         let (x, y) = self.cursor_pos;
-        let new_x: u16 = (x as i16 + dx).try_into().unwrap();
-        let new_y: u16 = (y as i16 + dy).try_into().unwrap();
+        let (size_x, size_y) = self.size;
+        let mut new_x: u16 = (x as i16 + dx).try_into().unwrap();
+        let mut new_y: u16 = (y as i16 + dy).try_into().unwrap();
+        if new_x > size_x {
+            new_x = size_x;
+        }
+        if new_y > size_y {
+            new_y = size_y;
+        }
         self.cursor_pos = (new_x, new_y);
     }
 
@@ -45,6 +56,13 @@ impl Screen {
             text
         )
         .unwrap();
+    }
+
+    pub fn render(&self) {
+        self.widget.render(self);
+        let (x, y) = self.cursor_pos;
+        write!(self.out.borrow_mut(), "{}", termion::cursor::Goto(x, y)).unwrap();
+        self.out.borrow_mut().flush().unwrap();
     }
 }
 

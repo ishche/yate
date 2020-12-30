@@ -3,14 +3,13 @@ use std::io::{stdin, Write};
 use termion::event::Key;
 use termion::input::TermRead;
 
-mod screen;
 mod ui;
 
 fn main() {
     let stdin = stdin();
     let stdin = stdin.lock();
-    let mut screen = screen::Screen::new();
-
+    let editor = ui::editor_view::EditorView::new();
+    let mut screen = ui::screen::Screen::new(Box::new(editor));
     let (x,y) = screen.cursor_pos;
     
     write!(
@@ -26,10 +25,8 @@ fn main() {
         termion::cursor::Goto(x, y)
     )
     .unwrap();
-    for i in 1..20 {
-        screen.draw(0, i-1, &format!("{}", i));
-    }
-    screen.out.borrow_mut().flush().unwrap();
+
+    screen.render();
     for c in stdin.keys() {
         match c.unwrap() {
             Key::Char('q') => break,
@@ -44,8 +41,6 @@ fn main() {
             Key::Backspace => println!("×"),
             _ => {}
         }
-        let (x,y) = screen.cursor_pos;
-        write!(screen.out.borrow_mut(), "{}", termion::cursor::Goto(x, y));
-        screen.out.borrow_mut().flush().unwrap();
+        screen.render();
     }
 }

@@ -1,19 +1,24 @@
-use crate::screen::Screen;
-
-const SCROLL_FACTOR: usize = 2;
-const TAB_LENGTH: usize = 4;
+// const SCROLL_FACTOR: usize = 2;
+// const TAB_LENGTH: usize = 4;
 
 pub struct EditorView {
-    line_offset: usize,
-    screen: Screen,
+    pub line_offset: usize
 }
 
 impl EditorView {
-    pub fn new(screen: Screen) -> EditorView {
-        EditorView {line_offset: 0, screen}
+    pub fn new() -> EditorView {
+        EditorView {line_offset: 0}
     }
+}
 
-    pub fn paint_lines(&self) {
-        
+impl super::Widget for EditorView {
+    fn render(&self, screen: &super::screen::Screen) {
+        paint_lines(screen);
     }
+}
+
+fn paint_lines(screen: &super::screen::Screen) {
+    for i in 1..20 {
+        screen.draw(0, i-1, &format!("{}", i));
+    }    
 }
