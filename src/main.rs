@@ -1,4 +1,5 @@
 extern crate termion;
+use std::env;
 use std::io::{stdin, Write};
 use termion::event::Key;
 use termion::input::TermRead;
@@ -6,12 +7,17 @@ use termion::input::TermRead;
 mod ui;
 
 fn main() {
+    let args: Vec<String> = env::args().collect();
     let stdin = stdin();
     let stdin = stdin.lock();
-    let editor = ui::editor_view::EditorView::new();
+
+    let editor = if args.len() > 1 {
+        ui::editor_view::EditorView::load_file(args.get(1).unwrap())
+    } else {
+        ui::editor_view::EditorView::new()
+    };
     let mut screen = ui::screen::Screen::new(Box::new(editor));
-    let (x,y) = screen.cursor_pos;
-    
+    let (x, y) = screen.cursor_pos;
     write!(
         screen.out.borrow_mut(),
         "{}{}{}'q' will exit.{}{}{}{}{}",
