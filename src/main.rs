@@ -27,7 +27,7 @@ fn main() {
         termion::style::Reset,
         termion::cursor::Goto(20, 10),
         termion::cursor::Show,
-        termion::cursor::BlinkingBar,
+        termion::cursor::BlinkingUnderline,
         termion::cursor::Goto(x, y)
     )
     .unwrap();

@@ -27,7 +27,7 @@ impl Screen {
             .unwrap(),
         );
         Screen {
-            cursor_pos: (1, 1),
+            cursor_pos: (4, 1),
             size: (w.into(), h.into()),
             out,
             widget: root_widget,
